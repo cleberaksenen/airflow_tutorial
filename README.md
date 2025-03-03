@@ -61,7 +61,19 @@ Se parar para pensar, um agendador de tarefas simples poderia fazer isso. Então
 - Forma de tornar o DAG dinâmico (se – A; se não – B).
 
 ### Operators
-- Determinam a tarefa em si, o que deve ser feito.
+- São os responsáveis pela determinação do que realmente é feito (tarefas).
+- 
+BashOperator – executa um comando bash;
+
+PythonOperator – chama uma função Python arbitrária;
+
+EmailOperator – envia um e-mail;
+
+SimpleHttpOperator – envia uma solicitação HTTP;
+
+SQLOperator – executa um comando SQL;
+
+Sensor – espera um certo tempo, arquivo, banco de dados...
 
 ### Hooks
 - Interfaces para plataformas externas e bancos de dados.
@@ -113,17 +125,32 @@ Ex. Apenas o grupo X terá acesso ao recurso Y.
 - Usado quando há necessidade em saber a execução do DAG em um período passado, para refletir sobre os ajustes e mudanças realizadas.
 - Especifica-se START_DATE e END_DATE como parâmetros.
 
-## Operadores
-São os responsáveis pela determinação do que realmente é feito (tarefas).
-•	BashOperator – executa um comando bash;
-•	PythonOperator – chama uma função Python arbitrária;
-•	EmailOperator – envia um e-mail;
-•	SimpleHttpOperator – envia uma solicitação HTTP;
-•	SQLOperator – executa um comando SQL;
-•	Sensor – espera um certo tempo, arquivo, banco de dados...
-
 ### ---
 
 ## Instalação
+### Passo 01: Acessar como usuário root
+```
+sudo bash
+```
+### Passo 02: Criar uma variável de ambiente (AIRFLOW_HOME)
+```
+export AIRFLOW_HOME=~/airflow
+```
+### Passo 03: Criação de um ambiente para a aplicação (recomendado)
+```
+python3 -m venv airflow_venv
+```
+```
+source airflow_venv/bin/activate 
+```
+### Passo 04: Instalação via pip
+```
+pip install apache-airflow 
+```
+### Passo 05: Inicializando o MetaStore no Apache AIRFLOW
+Inicialmente com SQLite para configurar a ferramenta, mas em seguida é melhor migrar para um outro banco de dados (MySQL, PostgreSQL).
+```
+airflow db init
+```
 
 
