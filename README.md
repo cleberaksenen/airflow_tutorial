@@ -62,7 +62,7 @@ Se parar para pensar, um agendador de tarefas simples poderia fazer isso. Então
 
 ### Operators
 - São os responsáveis pela determinação do que realmente é feito (tarefas).
-- 
+
 BashOperator – executa um comando bash;
 
 PythonOperator – chama uma função Python arbitrária;
@@ -152,5 +152,49 @@ Inicialmente com SQLite para configurar a ferramenta, mas em seguida é melhor m
 ```
 airflow db init
 ```
+
+### ---
+
+## Configurações
+### Dentro da pasta airflow na home do usuário:
+```
+cd ~/airflow/
+```
+```
+ls -lrth
+```
+
+-> O arquivo airflow.cfg é o arquivo de configurações
+
+-> Os DAGs ficam dentro da pasta /root/airflow/dags
+
+### Criação de usuário:
+```
+airflow users create \
+    --username admin \
+    --firstname SeuNome \
+    --lastname SeuSobrenome \
+    --role Admin \
+    --email seu@email.com \
+    --password senha_segura
+```
+
+### ---
+
+## Iniciando a interface web (localhost:8080)
+```
+airflow webserver --port 8080
+```
+
+## Subir o agendador (scheduler):
+```
+airflow scheduler
+```
+
+
+
+
+
+
 
 
