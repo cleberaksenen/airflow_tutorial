@@ -5,8 +5,6 @@
 ## Conceito
 Apache Airflow é uma plataforma (conjunto de processos, software) para criar, programar e monitorar fluxos de trabalho (workflows) de maneira programática
 
-![image](https://github.com/user-attachments/assets/022b2c7a-9429-411b-8847-f3de301e818f)
-
 O foco do Airflow não é o que está dentro da tarefa! Mas sim na orquestração de execução dessas atividades (monitorar se o A executou ou não, para que possa executar o B).
 
 Quando os fluxos de trabalho são definidos como código (Python), eles se tornam dinâmicos! Ou seja, mais fáceis de manter, verificáveis, testáveis e colaborativos (SE X, ENTAO Y).
@@ -26,7 +24,7 @@ O desenvolvedor Airflow executa suas tarefas e desenvolve os DAGs em uma série 
 
 ## Como e quando usar
 
-![image](https://github.com/user-attachments/assets/a0f02c48-2a85-429a-989a-9c2d62f73c22)
+![Diagrama em branco (2)](https://github.com/user-attachments/assets/a0eab936-24b0-475c-952d-39116941a100)
 
 Se parar para pensar, um agendador de tarefas simples poderia fazer isso. Então porque usar o Apache Airflow?
 
@@ -44,7 +42,6 @@ Se parar para pensar, um agendador de tarefas simples poderia fazer isso. Então
 - Executor pode ser local ou sequencial, impactando na forma de execução das tarefas;
 - Worker – responsável por executar as tarefas para depois devolver os resultados;
 - Todos precisam acessar os metadados (backend);
-
 
 ### DAG (Directed Acyclic Graph, ou Grafo Acíclico Direcionado)
 - Representa a estrutura de um fluxo de trabalho, sendo a coleção de todas as tarefas a serem executadas, organizada de modo que reflita seus relacionamentos e dependências;
@@ -125,7 +122,7 @@ Ex. Apenas o grupo X terá acesso ao recurso Y.
 - Usado quando há necessidade em saber a execução do DAG em um período passado, para refletir sobre os ajustes e mudanças realizadas.
 - Especifica-se START_DATE e END_DATE como parâmetros.
 
-### ---
+***
 
 ## Instalação
 ### Passo 01: Acessar como usuário root
@@ -136,38 +133,87 @@ sudo bash
 ```
 export AIRFLOW_HOME=~/airflow
 ```
-### Passo 03: Criação de um ambiente para a aplicação (recomendado)
+
+É recomendado adicionar ao PATH:
 ```
-python3 -m venv airflow_venv
+nano ~/.bashrc
 ```
+-> Na última linha adicionar "export AIRFLOW_HOME=~/airflow"
 ```
-source airflow_venv/bin/activate 
+source ~/.bashrc
 ```
-### Passo 04: Instalação via pip
+
+### Passo 03: Instalação via pip
 ```
 pip install apache-airflow 
 ```
-### Passo 05: Inicializando o MetaStore no Apache AIRFLOW
+### Passo 04: Inicializando o MetaStore no Apache AIRFLOW
 Inicialmente com SQLite para configurar a ferramenta, mas em seguida é melhor migrar para um outro banco de dados (MySQL, PostgreSQL).
 ```
 airflow db init
 ```
 
-### ---
-
-## Configurações
-### Dentro da pasta airflow na home do usuário:
+### Passo 05: Principais altrações
+Acesse a pasta airflow na home do usuário:
 ```
 cd ~/airflow/
 ```
+-> O arquivo airflow.cfg é o arquivo de configurações.
+-> Os DAGs ficam dentro dessa pasta "/root/airflow/dags" (Essa pasta precisa ser criada)
+
+Migrando de SQLite para PostgreSQL ou MySQL:
+Será necessário editar no arquivo de configuração a string de conexão: 
+"sql_alchemy_conn = sqllite:////root/airflow/airflow.db"
+
+#### PostgreSQL:
+sql_alchemy_conn = postgresql+psycopg2://airflow:airflow@localhost/airflow_db
+
+#### MySQL:
+sql_alchemy_conn = mysql+mysqldb://airflow_user:airflow_pass@localhost:3306/airflow_db
+
+Será necessário mudar o executor:
+executor = SequentialExecutor
+
+executor = LocalExecutor
+
+Instalando o PostgreSQL:
 ```
-ls -lrth
+sudo apt-get install postgresql postgresql-contrib
+```
+```
+nano /etc/postgresql/12/main/pg_hba.conf
+```
+Descomentar/ativar essa opção:
+![image](https://github.com/user-attachments/assets/0eb44bad-88e3-4c1d-ba14-c0d8384ee97e)
+
+Por fim, dar o restart no PostgreSQL:
+```
+service postgresql restart
+```
+Conectando ao PostgreSQL:
+```
+sudo -u postgres psql
+```
+Criando o usuário PostgreSQL para o Airflow:
+```
+CREATE USER [nome do usuário] PASSWORD [senha];
+```
+–> tem que ser o mesmo usuário do Airflow
+```
+CREATE DATABASE [nome do banco de dados];
+```
+-> tem que ser o mesmo nome do banco de dados do arquivo de configuração
+```
+GRANT ALL PRIVILEGES ON DATABASE [nome do banco de dados] TO [nome do usuário]
+```
+Tendo feito a migração do banco de dados SQLite para PostgreSQL ou MySQL:
+```
+airflow db init 
 ```
 
--> O arquivo airflow.cfg é o arquivo de configurações
+***
 
--> Os DAGs ficam dentro da pasta /root/airflow/dags
-
+## Configurações
 ### Criação de usuário:
 ```
 airflow users create \
@@ -178,8 +224,6 @@ airflow users create \
     --email seu@email.com \
     --password senha_segura
 ```
-
-### ---
 
 ## Iniciando a interface web (localhost:8080)
 ```
